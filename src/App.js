@@ -1,24 +1,49 @@
 import logo from './logo.svg';
 import './App.css';
+import ForDesktop from './desktop';
+import ForLaptop from './laptop';
+import ForMobile from './mobile';
+import { useState,useEffect } from 'react';
 
 function App() {
+  const [windowViewportSize, setWindowViewportSize] = useState('');
+
+
+  useEffect(() => {
+    
+    function detectWindowSize() {
+      if (window.innerWidth >= 1024){
+        return 'isDesktop';
+      } 
+      if (window.innerWidth >= 768) {
+        return 'isTablet';
+      }
+      if (window.innerWidth >= 360) {
+        return 'isMobile';
+      }
+    }
+
+    const size = detectWindowSize();
+    setWindowViewportSize(size);
+
+    window.addEventListener('resize', () => {
+      const newSize = detectWindowSize();
+      if (newSize !== windowViewportSize) {
+        setWindowViewportSize(newSize);
+      }
+    });
+
+    return () => {
+      window.removeEventListener('resize', () => {});
+    };
+  }, [windowViewportSize])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      { windowViewportSize === 'isDesktop' && <ForDesktop /> }
+      { windowViewportSize === 'isTablet' && <ForLaptop /> }
+      { windowViewportSize === 'isMobile' && <ForMobile />}
+    </>
   );
 }
 
